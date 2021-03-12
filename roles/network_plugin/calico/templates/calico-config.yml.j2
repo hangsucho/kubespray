@@ -25,6 +25,12 @@ data:
 {% if inventory_hostname in groups['k8s-cluster'] and peer_with_router|default(false) %}
   as: "{{ local_as|default(global_as_num) }}"
 {% endif -%}
+{% if calico_veth_mtu is defined %}
+  veth_mtu: "{{ calico_veth_mtu }}"
+{% else %}
+  veth_mtu: "0"
+{% endif %}
+{% raw %}
   cni_network_config: |-
       {
         "name": "k8s-pod-network",
@@ -58,3 +64,4 @@ data:
           }
         ]
       }
+{% endraw %}

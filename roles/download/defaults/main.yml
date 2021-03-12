@@ -465,7 +465,7 @@ calico_node_image_tag: "{{ calico_version }}{%- if image_arch != 'amd64' -%}-{{ 
 calico_cni_image_repo: "{{ quay_image_repo }}/calico/cni"
 calico_cni_image_tag: "{{ calico_cni_version }}{%- if image_arch != 'amd64' -%}-{{ image_arch }}{%- endif -%}"
 calico_pod2daemon_flexvol_repo: "{{ quay_image_repo }}/calico/pod2daemon-flexvol"
-calico_pod2daemon_flexvol_tag: "{{ quay_image_repo }}/calico/pod2daemon-flexvol"
+calico_pod2daemon_flexvol_tag: "{{ calico_version }}"
 calico_policy_image_repo: "{{ quay_image_repo }}/calico/kube-controllers"
 calico_policy_image_tag: "{{ calico_version }}"
 calico_typha_image_repo: "{{ quay_image_repo }}/calico/typha"
