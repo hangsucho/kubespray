@@ -64,7 +64,7 @@ quay_image_repo: "quay.io"
 
 # TODO(mattymo): Move calico versions to roles/network_plugins/calico/defaults
 # after migration to container download
-calico_version: "v3.16.8"
+calico_version: "v3.18.0"
 calico_ctl_version: "{{ calico_version }}"
 calico_cni_version: "{{ calico_version }}"
 calico_policy_version: "{{ calico_version }}"
@@ -412,12 +412,15 @@ cni_binary_checksums:
   amd64: 58a58d389895ba9f9bbd3ef330f186c0bb7484136d0bfb9b50152eed55d9ec24
 calicoctl_binary_checksums:
   arm:
+    v3.18.0: 0
     v3.16.8: 0
     v3.15.2: 0
   amd64:
+    v3.18.0: 7152bdda15c9fd2c4723004931def11989e20fa0884f4fc45ae8b61cc836cd19
     v3.16.8: fceadd5058de5c9e9ec5b22b27daefb66aee8bc52c069715a1c82ab13f04973e
     v3.15.2: 219ae954501cbe15daeda0ad52e13ec65f99c77548c7d3cbfc4ced5c7149fdf1
   arm64:
+    v3.18.0: 48ad67a42b47e9636176fd251fbb5564d6b6bccbf12f471bc5667cdb545bc3f2
     v3.16.8: 3d6569c54dbe1f1d2220824aaedb10e87631808ca3153eed3d2475d03bd81661
     v3.15.2: 49165f9e4ad55402248b578310fcf68a57363f54e66be04ac24be9714899b4d5
 
@@ -461,8 +464,10 @@ calico_node_image_repo: "{{ quay_image_repo }}/calico/node"
 calico_node_image_tag: "{{ calico_version }}{%- if image_arch != 'amd64' -%}-{{ image_arch }}{%- endif -%}"
 calico_cni_image_repo: "{{ quay_image_repo }}/calico/cni"
 calico_cni_image_tag: "{{ calico_cni_version }}{%- if image_arch != 'amd64' -%}-{{ image_arch }}{%- endif -%}"
+calico_pod2daemon_flexvol_repo: "{{ quay_image_repo }}/calico/pod2daemon-flexvol"
+calico_pod2daemon_flexvol_tag: "{{ calico_version }}"
 calico_policy_image_repo: "{{ quay_image_repo }}/calico/kube-controllers"
-calico_policy_image_tag: "{{ calico_policy_version }}{%- if image_arch != 'amd64' -%}-{{ image_arch }}{%- endif -%}"
+calico_policy_image_tag: "{{ calico_version }}"
 calico_typha_image_repo: "{{ quay_image_repo }}/calico/typha"
 calico_typha_image_tag: "{{ calico_typha_version }}{%- if image_arch != 'amd64' -%}-{{ image_arch }}{%- endif -%}"
 pod_infra_image_repo: "{{ kube_image_repo }}/pause"
