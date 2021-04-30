@@ -25,6 +25,11 @@ data:
     key-file: "{{ cilium_cert_dir }}/key.pem"
     cert-file: "{{ cilium_cert_dir }}/cert.crt"
 
+  # kvstore
+  # https://docs.cilium.io/en/latest/cmdref/kvstore/
+  kvstore: etcd
+  kvstore-opt: '{"etcd.config": "/var/lib/etcd-config/etcd.config"}'
+
   # If you want metrics enabled in all of your Cilium agents, set the port for
   # which the Cilium agents will have their metrics exposed.
   # This option deprecates the "prometheus-serve-addr" in the
@@ -154,4 +159,29 @@ data:
 {% if cilium_enable_hubble_metrics %}
   hubble-metrics-server: ":9091"
 {% endif %}
+{% endif %}
+
+  # IPsec based transparent encryption between nodes
+{% if cilium_ipsec_enabled %}
+  enable-ipsec: "true"
+  ipsec-key-file: /etc/ipsec/keys
+  encrypt-node: "false"
+{% endif %}
+
+  # IPAM settings
+{% if cilium_version | regex_replace('v') is version('1.9', '>=') %}
+  ipam: "{{ cilium_ipam_mode }}"
+{% endif %}
+
+  # bpf
+{% if cilium_bpf_ncc_enabled %}
+  bpf-lb-algorithm: "{{ cilium_config_loadBalancer_algorithm }}"
+  bpf-lb-maglev-table-size: "{{ cilium_config_maglev_tableSize }}"
+  bpf-lb-maglev-hash-seed: "{{ cilium_config_maglev_hashSeed }}"
+  auto-direct-node-routes: "{{ cilium_config_autoDirectNodeRoutes }}"
+  kube-proxy-replacement: "{{ cilium_config_kubeProxyReplacement }}"
+  node-port-mode: "{{ cilium_config_loadBalancer_mode }}"
+  node-port-acceleration: "{{ cilium_config_loadBalancer_acceleration }}"
+  devices: "{{ cilium_config_device }}"
+  bpf-lb-map-max: "{{ cilium_config_lbMapMax }}"
 {% endif %}

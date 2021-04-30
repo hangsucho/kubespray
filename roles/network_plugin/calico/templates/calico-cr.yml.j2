@@ -28,10 +28,7 @@ rules:
     resources:
       - nodes/status
     verbs:
-      # Needed for clearing NodeNetworkUnavailable flag.
       - patch
-      # Calico stores some configuration information in node annotations.
-      - update
 {% if calico_datastore == "etcd" %}
   - apiGroups:
     - policy

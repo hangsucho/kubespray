@@ -30,14 +30,7 @@ spec:
       hostNetwork: true
       serviceAccountName: calico-node
       tolerations:
-        # Make sure calico-node gets scheduled on all nodes.
-        - effect: NoSchedule
-          operator: Exists
-        # Mark the pod as a critical add-on for rescheduling.
-        - key: CriticalAddonsOnly
-          operator: Exists
-        - effect: NoExecute
-          operator: Exists
+      - operator: Exists
       # Minimize downtime during a rolling upgrade or deletion; tell Kubernetes to do a "force
       # deletion": https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods.
       terminationGracePeriodSeconds: 0
@@ -76,18 +69,6 @@ spec:
             # Name of the CNI config file to create.
             - name: CNI_CONF_NAME
               value: "10-calico.conflist"
-            # The CNI network config to install on each node.
-            - name: CNI_NETWORK_CONFIG
-              valueFrom:
-                configMapKeyRef:
-                  name: calico-config
-                  key: cni_network_config
-            # CNI MTU Config variable
-            - name: CNI_MTU
-              valueFrom:
-                configMapKeyRef:
-                  name: calico-config
-                  key: veth_mtu
             # Install CNI binaries
             - name: UPDATE_CNI_BINARIES
               value: "true"
@@ -109,13 +90,6 @@ spec:
               name: cni-net-dir
             - mountPath: /host/opt/cni/bin
               name: cni-bin-dir
-        # Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes
-        # to communicate with Felix over the Policy Sync API.
-        - name: flexvol-driver
-          image: {{ calico_pod2daemon_flexvol_repo }}:{{ calico_pod2daemon_flexvol_tag }}
-          volumeMounts:
-          - name: flexvol-driver-host
-            mountPath: /host/driver
           securityContext:
             privileged: true
       containers:
@@ -124,11 +98,6 @@ spec:
         # host.
         - name: calico-node
           image: {{ calico_node_image_repo }}:{{ calico_node_image_tag }}
-          envFrom:
-          - configMapRef:
-              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden for eBPF mode.
-              name: kubernetes-services-endpoint
-              optional: true
           env:
             # The location of the Calico etcd cluster.
 {% if calico_datastore == "etcd" %}
@@ -230,10 +199,7 @@ spec:
               value: "{{ calico_veth_mtu }}"
 {% endif %}
             - name: CALICO_IPV4POOL_IPIP
-              value: "{{ calico_ipip_mode }}"
-            # Enable or Disable VXLAN on the default IP pool.
-            - name: CALICO_IPV4POOL_VXLAN
-              value: "{{ calico_vxlan_mode }}"
+              value: "{{ calico_ipv4pool_ipip }}"
             - name: FELIX_IPV6SUPPORT
               value: "{{ enable_dual_stack_networks | default(false) }}"
             # Set Felix logging to "info"
@@ -245,8 +211,6 @@ spec:
             # Set MTU for tunnel device used if ipip is enabled
 {% if calico_mtu is defined %}
             - name: FELIX_IPINIPMTU
-              value: "{{ calico_veth_mtu | default(calico_mtu) }}"
-            - name: FELIX_VXLANMTU
               value: "{{ calico_veth_mtu | default(calico_mtu) }}"
 {% endif %}
             - name: FELIX_CHAININSERTMODE
@@ -335,16 +299,6 @@ spec:
             - mountPath: /var/lib/calico
               name: var-lib-calico
               readOnly: false
-            - name: policysync
-              mountPath: /var/run/nodeagent
-            - name: sysfs
-              mountPath: /sys/fs/
-              # Bidirectional means that, if we mount the BPF filesystem at /sys/fs/bpf it will propagate to the host.
-              # If the host is known to mount that filesystem already then Bidirectional can be omitted.
-              mountPropagation: Bidirectional
-            - name: cni-log-dir
-              mountPath: /var/log/calico/cni
-              readOnly: true
 {% if calico_datastore == "etcd" %}
             - mountPath: /calico-secrets
               name: etcd-certs
@@ -380,10 +334,6 @@ spec:
         - name: cni-bin-dir
           hostPath:
             path: /opt/cni/bin
-        # Used to access CNI logs.
-        - name: cni-log-dir
-          hostPath:
-            path: /var/log/calico/cni
 {% if calico_datastore == "etcd" %}
         # Mount in the etcd TLS secrets.
         - name: etcd-certs
@@ -395,10 +345,6 @@ spec:
           hostPath:
             path: /run/xtables.lock
             type: FileOrCreate
-        - name: sysfs
-          hostPath:
-            path: /sys/fs/
-            type: DirectoryOrCreate
 {% if calico_datastore == "kdd" %}
         # Mount in the directory for host-local IPAM allocations. This is
         # used when upgrading from host-local to calico-ipam, and can be removed
@@ -407,16 +353,6 @@ spec:
           hostPath:
             path: /var/lib/cni/networks
 {% endif %}
-        # Used to create per-pod Unix Domain Sockets
-        - name: policysync
-          hostPath:
-            type: DirectoryOrCreate
-            path: /var/run/nodeagent
-        # Used to install Flex Volume Driver
-        - name: flexvol-driver-host
-          hostPath:
-            type: DirectoryOrCreate
-            path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds
 {% if typha_enabled and typha_secure %}
         - name: typha-client
           secret:
