@@ -171,6 +171,11 @@ spec:
           name: cilium-ipsec-secrets
           readOnly: true
 {% endif %}
+{% if cilium_bgp_enabled %}
+        - mountPath: /var/lib/cilium/bgp
+          name: bgp-config-path
+          readOnly: true
+{% endif %}
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: false
@@ -289,6 +294,11 @@ spec:
       - name: cilium-ipsec-secrets
         secret:
           secretName: cilium-ipsec-keys
+{% if cilium_bgp_enabled %}
+      - configMap:
+          name: bgp-config
+        name: bgp-config-path
+{% endif %}
 {% endif %}
   updateStrategy:
     rollingUpdate:

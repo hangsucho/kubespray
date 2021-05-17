@@ -173,15 +173,27 @@ data:
   ipam: "{{ cilium_ipam_mode }}"
 {% endif %}
 
-  # bpf
-{% if cilium_bpf_ncc_enabled %}
-  bpf-lb-algorithm: "{{ cilium_config_loadBalancer_algorithm }}"
-  bpf-lb-maglev-table-size: "{{ cilium_config_maglev_tableSize }}"
-  bpf-lb-maglev-hash-seed: "{{ cilium_config_maglev_hashSeed }}"
-  auto-direct-node-routes: "{{ cilium_config_autoDirectNodeRoutes }}"
-  kube-proxy-replacement: "{{ cilium_config_kubeProxyReplacement }}"
-  node-port-mode: "{{ cilium_config_loadBalancer_mode }}"
-  node-port-acceleration: "{{ cilium_config_loadBalancer_acceleration }}"
-  devices: "{{ cilium_config_device }}"
-  bpf-lb-map-max: "{{ cilium_config_lbMapMax }}"
+# bpf
+#{% if cilium_bpf_ncc_enabled %}
+#  bpf-lb-algorithm: "{{ cilium_config_loadBalancer_algorithm }}"
+#  bpf-lb-maglev-table-size: "{{ cilium_config_maglev_tableSize }}"
+#  bpf-lb-maglev-hash-seed: "{{ cilium_config_maglev_hashSeed }}"
+#  auto-direct-node-routes: "{{ cilium_config_autoDirectNodeRoutes }}"
+#  node-port-mode: "{{ cilium_config_loadBalancer_mode }}"
+#  node-port-acceleration: "{{ cilium_config_loadBalancer_acceleration }}"
+#  devices: "{{ cilium_config_device }}"
+#  bpf-lb-map-max: "{{ cilium_config_lbMapMax }}"
+#{% endif %}
+
+
+ # 1.10
+{% if cilium_bgp_enabled %}
+  bgp-announce-lb-ip: "{{ cilium_bgp_announce_loadbalancerIP }}"
 {% endif %}
+  wait-bpf-mount: "{{ cilium_bpf_waitForMount }}"
+  enable-custom-calls: "{{ cilium_customCalls_enabled }}"
+  enable-ipv4-masquerade: "{{ cilium_enableIPv4Masquerade }}"
+  enable-ipv6-masquerade: "{{ cilium_enableIPv6Masquerade }}"
+  enable-host-reachable-services: "{{ cilium_hostServices_enabled }}"
+  cilium_hostServices_protocols: "{{ cilium_hostServices_protocols }}"
+  kube-proxy-replacement: "{{ cilium_config_kubeProxyReplacement }}"
