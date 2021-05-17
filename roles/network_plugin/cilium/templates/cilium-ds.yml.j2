@@ -294,11 +294,11 @@ spec:
       - name: cilium-ipsec-secrets
         secret:
           secretName: cilium-ipsec-keys
+{% endif %}
 {% if cilium_bgp_enabled %}
       - configMap:
           name: bgp-config
         name: bgp-config-path
-{% endif %}
 {% endif %}
   updateStrategy:
     rollingUpdate:

@@ -5,14 +5,14 @@ cilium_version: "v1.10.0-rc1"
 cilium_kube_proxy_replacement: "strict"
 #cilium_bpf_ncc_enabled: true
 
-#cilium_config_loadBalancer_algorithm: "maglev"
-#cilium_config_maglev_tableSize: "65521"
-#cilium_config_maglev_hashSeed: "W3vXTb4LEpnOFTJI"
-#cilium_config_autoDirectNodeRoutes: "true"
-#cilium_config_loadBalancer_mode: "dsr"
-#cilium_config_loadBalancer_acceleration: "native"
-#cilium_config_device: "eth4"
-#cilium_config_lbMapMax: 131071
+cilium_config_loadBalancer_algorithm: "maglev"
+cilium_config_maglev_tableSize: "65521"
+cilium_config_maglev_hashSeed: "W3vXTb4LEpnOFTJI"
+cilium_config_autoDirectNodeRoutes: "true"
+cilium_config_loadBalancer_mode: "dsr"
+cilium_config_loadBalancer_acceleration: "native"
+cilium_config_device: "eth4"
+cilium_config_lbMapMax: 131071
 
 
 cilium_tunnel_mode: "vxlan"
