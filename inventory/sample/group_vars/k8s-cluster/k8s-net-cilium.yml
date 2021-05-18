@@ -29,7 +29,7 @@ cilium_config_kubeProxyReplacement: "strict"
 cilium_bgp_peers_peer_address: 10.105.77.131,10.105.77.132
 cilium_bgp_peers_peer_asn: 64881
 cilium_bgp_peers_my_asn: 64882
-cilium_bgp_address-pools_address: 10.108.231.0/26
+cilium_bgp_address_pools_address: 10.108.231.0/26
 
 #
 #bgp.announce.loadbalancerIP: true			# Enable allocation and announcement of service LoadBalancer IPs
