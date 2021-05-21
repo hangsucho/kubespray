@@ -42,6 +42,25 @@
     - inventory_hostname in groups['kube_control_plane']
     - item.file != "cilium-secret.yml" or (item.file == "cilium-secret.yml" and cilium_ipsec_enabled)
 
+- name: Cilium | Create Cilium Hubble manifests
+  template:
+    src: "{{ item.file }}.j2"
+    dest: "{{ kube_config_dir }}/addons/hubble/{{ item.file }}"
+  loop:
+    - {name: hubble, file: hubble-config.yml, type: cm}
+    - {name: hubble, file: hubble-crb.yml, type: clusterrolebinding}
+    - {name: hubble, file: hubble-cr.yml, type: clusterrole}
+    - {name: hubble, file: hubble-cronjob.yml, type: cronjob, when: "{{ cilium_hubble_tls_generate }}"}
+    - {name: hubble, file: hubble-deploy.yml, type: deploy}
+    - {name: hubble, file: hubble-job.yml, type: job, when: "{{ cilium_hubble_tls_generate }}"}
+    - {name: hubble, file: hubble-sa.yml, type: sa}
+    - {name: hubble, file: hubble-service.yml, type: service}
+  register: cilium_hubble_manifests
+  when:
+    - inventory_hostname == groups['kube_control_plane'][0]
+    - cilium_enable_hubble and cilium_hubble_install
+    - item.when | default(True) | bool
+
 - name: Cilium | Enable portmap addon
   template:
     src: 000-cilium-portmap.conflist.j2
