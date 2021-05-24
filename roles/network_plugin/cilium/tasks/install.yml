@@ -25,6 +25,17 @@
     - {s: "{{ kube_etcd_cert_file }}", d: "cert.crt"}
     - {s: "{{ kube_etcd_key_file }}", d: "key.pem"}
 
+- name: Cilium | Create hubble dir
+  file:
+    path: "{{ kube_config_dir }}/addons/hubble"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - inventory_hostname == groups['kube_control_plane'][0]
+    - cilium_hubble_install
+
 - name: Cilium | Create Cilium node manifests
   template:
     src: "{{ item.file }}.j2"
