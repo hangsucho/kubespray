@@ -185,3 +185,48 @@ data:
 {% if cilium_version | regex_replace('v') is version('1.9', '>=') %}
   ipam: "{{ cilium_ipam_mode }}"
 {% endif %}
+
+# bpf
+#{% if cilium_bpf_ncc_enabled | default(false) %}
+#  bpf-lb-algorithm: "{{ cilium_config_loadBalancer_algorithm | default('maglev') }}"
+#  bpf-lb-maglev-table-size: "{{ cilium_config_maglev_tableSize | default('65521') }}"
+#  bpf-lb-maglev-hash-seed: "{{ cilium_config_maglev_hashSeed | default('W3vXTb4LEpnOFTJI') }}"
+#  auto-direct-node-routes: "{{ cilium_config_autoDirectNodeRoutes | default('true') }}"
+#  node-port-mode: "{{ cilium_config_loadBalancer_mode | default('dsr') }}"
+#  node-port-acceleration: "{{ cilium_config_loadBalancer_acceleration | default('native') }}"
+#  devices: "{{ cilium_config_device | default('eth0')}}"
+#  bpf-lb-map-max: "{{ cilium_config_lbMapMax | default('131071')}}"
+#{% endif %}
+
+
+# 1.10
+{% if cilium_bgp_enabled %}
+  bgp-announce-lb-ip: "{{ cilium_bgp_announce_loadbalancerIP }}"
+{% endif %}
+  wait-bpf-mount: "{{ cilium_bpf_waitForMount }}"
+  enable-custom-calls: "{{ cilium_customCalls_enabled }}"
+  enable-ipv4-masquerade: "{{ cilium_enableIPv4Masquerade }}"
+  enable-ipv6-masquerade: "{{ cilium_enableIPv6Masquerade }}"
+  enable-host-reachable-services: "{{ cilium_hostServices_enabled }}"
+  cilium_hostServices_protocols: "{{ cilium_hostServices_protocols }}"
+  kube-proxy-replacement: "{{ cilium_config_kubeProxyReplacement }}"
+
+{% if cilium_bgp_enabled %}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bgp-config
+  namespace: kube-system
+data:
+  config.yaml: |
+    peers:
+      - peer-address: {{ cilium_bgp_peers_peer_address }}
+        peer-asn: {{ cilium_bgp_peers_peer_asn }}
+        my-asn: {{ cilium_bgp_peers_my_asn }}
+    address-pools:
+      - name: default
+        protocol: bgp
+        addresses:
+          - {{ cilium_bgp_address_pools_address }}
+{% endif %}

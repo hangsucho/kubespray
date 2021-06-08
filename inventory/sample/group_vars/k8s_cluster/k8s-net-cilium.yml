@@ -1,1 +1,57 @@
 # see roles/network_plugin/cilium/defaults/main.yml
+# https://github.com/cilium/cilium/tree/v1.9.6/install/kubernetes/cilium
+# kube_apiserver_global_endpoint:
+cilium_version: "v1.10.0-rc1"
+cilium_kube_proxy_replacement: "strict"
+cilium_bpf_ncc_enabled: true
+
+cilium_config_loadBalancer_algorithm: "maglev"
+cilium_config_maglev_tableSize: "65521"
+cilium_config_maglev_hashSeed: "W3vXTb4LEpnOFTJI"
+cilium_config_autoDirectNodeRoutes: "true"
+cilium_config_loadBalancer_mode: "dsr"
+cilium_config_loadBalancer_acceleration: "native"
+cilium_config_device: "eth4"
+cilium_config_lbMapMax: "131071"
+
+
+cilium_tunnel_mode: "vxlan"
+cilium_bgp_enabled: true
+cilium_bgp_announce_loadbalancerIP: true
+cilium_bpf_waitForMount: true
+cilium_customCalls_enabled: true
+cilium_enableIPv4Masquerade: true
+cilium_enableIPv6Masquerade: false
+cilium_hostServices_enabled: true
+cilium_hostServices_protocols: "tcp,udp"
+cilium_config_kubeProxyReplacement: "strict"
+
+cilium_bgp_peers_peer_address: 10.105.77.131,10.105.77.132
+cilium_bgp_peers_peer_asn: 64881
+cilium_bgp_peers_my_asn: 64882
+cilium_bgp_address_pools_address: 10.108.231.0/26
+
+#
+#bgp.announce.loadbalancerIP: true			# Enable allocation and announcement of service LoadBalancer IPs
+#bgp.enabled: true							# Enable BGP support inside Cilium; embeds a new ConfigMap for BGP inside cilium-agent and cilium-operator
+#bpf.waitForMount: true						# Force the cilium-agent DaemonSet to wait in an initContainer until the eBPF filesystem has been mounted.
+#customCalls.enabled: true					# Enable tail call hooks for custom eBPF programs.
+#enableIPv4Masquerade: true					# (운영:false), Enables masquerading of IPv4 traffic leaving the node from endpoints.
+#enableIPv6Masquerade: false					# Enables masquerading of IPv6 traffic leaving the node from endpoints.
+#externalIPs.enabled: true					# Enable ExternalIPs service support.
+#hostPort.enabled: true						# Enable hostPort service support.
+#hostServices.enabled: true					# Enable host reachable services.
+#hostServices.protocols: "tcp,udp"			# Supported list of protocols to apply ClusterIP translation to
+
+#hubble.metrics.enabled: "{dns:query;ignoreAAAA,drop,tcp,flow,icmp,http}"
+# Configures the list of metrics to collect. If empty or null, metrics are disabled. Example:   enabled:   - dns:query;ignoreAAAA   - drop   - tcp   - flow   - icmp   - http You can specify the list of metrics from the helm CLI:   --set metrics.enabled="{dns:query;ignoreAAAA,drop,tcp,flow,icmp,http}"
+
+#hubble.metrics.serviceMonitor.enabled: true
+# Create ServiceMonitor resources for Prometheus Operator. This requires the prometheus CRDs to be available. ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml) |
+
+#hubble.ui.enabled: true						#
+#kubeProxyReplacement: "strict"
+# Configure the kube-proxy replacement in Cilium BPF datapath Valid options are "disabled", "probe", "partial", "strict". ref: https://docs.cilium.io/en/stable/gettingstarted/kubeproxy-free/
+#nodePort.enabled: true						# (운영:false), Enable the Cilium NodePort service implementation.
+#tunnel: "vxlan"
+# Configure the encapsulation configuration for communication between nodes. Possible values:   - disabled   - vxlan (default)   - geneve
