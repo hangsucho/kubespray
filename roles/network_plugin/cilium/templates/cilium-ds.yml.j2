@@ -171,6 +171,16 @@ spec:
           name: cilium-ipsec-secrets
           readOnly: true
 {% endif %}
+{% if cilium_bgp_enabled %}
+        - mountPath: /var/lib/cilium/bgp
+          name: bgp-config-path
+          readOnly: true
+{% endif %}
+{% if cilium_hubble_install %}
+        - mountPath: /var/lib/cilium/tls/hubble
+          name: hubble-tls
+          readOnly: true
+{% endif %}
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: false
@@ -289,6 +299,30 @@ spec:
       - name: cilium-ipsec-secrets
         secret:
           secretName: cilium-ipsec-keys
+{% endif %}
+{% if cilium_bgp_enabled %}
+      - configMap:
+          name: bgp-config
+        name: bgp-config-path
+{% endif %}
+{% if cilium_hubble_install %}
+      - name: hubble-tls
+        projected:
+          sources:
+          - secret:
+              name: hubble-server-certs
+              items:
+                - key: tls.crt
+                  path: server.crt
+                - key: tls.key
+                  path: server.key
+              optional: true
+          - configMap:
+              name: hubble-ca-cert
+              items:
+                - key: ca.crt
+                  path: client-ca.crt
+              optional: true
 {% endif %}
   updateStrategy:
     rollingUpdate:
